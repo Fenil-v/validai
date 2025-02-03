@@ -1,0 +1,27 @@
+# Python-related
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Virtual environment
+env/
+venv/
+ENV/
+.env
+
+# IDE files (if you use VSCode or other editors)
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.bak
+*.swp
+*.swo
+
+# Python egg & distribution folders
+*.egg-info/
+dist/
+build/
