@@ -44,7 +44,7 @@ const SubmitIdea: React.FC = () => {
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
-          placeholder="Describe your SaaS idea..."
+          placeholder="Enter you idea here..."
           rows={5}
           className="w-full p-3 border border-gray-300 rounded-md mb-4"
         ></textarea>
