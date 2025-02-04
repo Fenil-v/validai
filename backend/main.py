@@ -1,4 +1,5 @@
-import openai
+# type: ignore
+import openai 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
@@ -50,7 +51,6 @@ def get_market_demand(idea: str):
         pytrends = TrendReq(hl='en-US', tz=360)
         pytrends.build_payload([idea], cat=0, timeframe='today 12-m')
         trends_data = pytrends.interest_over_time()
-
         if not trends_data.empty:
             avg_interest = trends_data[idea].mean()
             if avg_interest > 50:
@@ -74,17 +74,17 @@ async def validate_idea(request: IdeaRequest):
         market_demand = get_market_demand(idea)
 
         # AI-generated insights
-        # ai_response = openai.ChatCompletion.create(
-        #     model="gpt-3.5-turbo",
-        #     messages=[
-        #         {"role": "system", "content": "You are an expert startup idea validator."},
-        #         {"role": "user", "content": f"Analyze the market demand and competitor insights for {idea}. Provide key takeaways."}
-        #     ],
-        #     max_tokens=100
-        # )
+        ai_response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an expert startup idea validator."},
+                {"role": "user", "content": f"Analyze the market demand and competitor insights for {idea}. Provide key takeaways."}
+            ],
+            max_tokens=100
+        )
         
-        # validation_result = ai_response["choices"][0]["message"]["content"]
-        validation_result = "HEllo"
+        validation_result = ai_response["choices"][0]["message"]["content"]
+        # validation_result = "HEllo"
       
         return {
             "marketDemand": market_demand,
