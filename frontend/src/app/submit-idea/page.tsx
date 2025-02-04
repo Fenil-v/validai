@@ -1,23 +1,37 @@
-'use client';
-import { useState } from 'react';
-import axios from 'axios';
+"use client";
+import { useState } from "react";
+import axios from "axios";
 
-const SubmitIdea = () => {
-  const [idea, setIdea] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState(null);
+interface ValidationResponse {
+  marketDemand: string;
+  competitors: string[];
+  pricingStrategy: string;
+  growthPotential: string;
+  aiAnalysis: string;
+}
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const SubmitIdea: React.FC = () => {
+  const [idea, setIdea] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<ValidationResponse | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
+
     try {
-      // Update the URL to your backend
-      const res = await axios.post('http://127.0.0.1:8000/validate', { idea });
-      // console.log(res,"fenillll");
-      
+      const res = await axios.post<ValidationResponse>(
+        "http://localhost:8000/validate",
+        { idea },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setResponse(res.data);
     } catch (error) {
-      console.error('Error submitting idea:', error);
+      console.error("Error submitting idea:", error);
     } finally {
       setLoading(false);
     }
@@ -39,13 +53,43 @@ const SubmitIdea = () => {
           className="bg-blue-500 text-white p-3 rounded-md"
           disabled={loading}
         >
-          {loading ? 'Validating...' : 'Validate Idea'}
+          {loading ? "Validating..." : "Validate Idea"}
         </button>
       </form>
+
       {response && (
         <div className="mt-6">
-          <h2 className="text-2xl font-semibold">Validation Result</h2>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
+          <h2 className="text-2xl font-semibold mb-4">Validation Result</h2>
+          <div className="overflow-auto">
+            <table className="min-w-full bg-white border border-gray-300 rounded-md">
+              <tbody>
+                <tr className="border-b">
+                  <td className="p-3 font-semibold">Market Demand:</td>
+                  <td className="p-3">{response.marketDemand}</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3 font-semibold">Competitors:</td>
+                  <td className="p-3">
+                    {response.competitors && response.competitors.length > 0
+                      ? response.competitors.join(", ")
+                      : "None"}
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3 font-semibold">Pricing Strategy:</td>
+                  <td className="p-3">{response.pricingStrategy}</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3 font-semibold">Growth Potential:</td>
+                  <td className="p-3">{response.growthPotential}</td>
+                </tr>
+                <tr>
+                  <td className="p-3 font-semibold">AI Analysis:</td>
+                  <td className="p-3">{response.aiAnalysis}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
+# Load environment variables
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -26,20 +27,26 @@ class IdeaRequest(BaseModel):
 async def validate_idea(request: IdeaRequest):
     idea = request.idea
 
-    # Use OpenAI to analyze the idea
-    response = openai.Completion.create(
-        model="gpt-3.5-turbo", 
-        prompt=f"Validate this startup idea: {idea}",
-        max_tokens=200
-    )
-    
-    validation_result = response.choices[0].text.strip()
-    
-    # Return a simulated validation result for now
-    return {
-        "marketDemand": "High",
-        "competitors": ["Competitor A", "Competitor B"],
-        "pricingStrategy": "Freemium",
-        "growthPotential": "Moderate",
-        "aiAnalysis": validation_result
-    }
+    try:
+        # Use OpenAI Chat API instead of Completion API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", 
+            messages=[
+                {"role": "system", "content": "You are an expert startup idea validator."},
+                {"role": "user", "content": f"Validate this startup idea: {idea}"}
+            ],
+            max_tokens=200
+        )
+        
+        validation_result = response["choices"][0]["message"]["content"]
+      
+        return {
+            "marketDemand": "High",
+            "competitors": ["Competitor A", "Competitor B"],
+            "pricingStrategy": "Freemium",
+            "growthPotential": "Moderate",
+            "aiAnalysis": validation_result
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
