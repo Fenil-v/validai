@@ -1,18 +1,29 @@
 # type: ignore
 import openai 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 import os
 import requests
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from pytrends.request import TrendReq
+from sqlalchemy.orm import Session
+from config.db import SessionLocal
+
 
 # Load environment variables
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 SERPAPI_KEY = os.getenv("SERPAPI_KEY") 
 
+# Dependency to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        
 app = FastAPI()
 
 # Enable CORS for frontend
