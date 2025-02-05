@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pytrends.request import TrendReq
 from sqlalchemy.orm import Session
 from config.db import SessionLocal
+from models import models
 
 
 # Load environment variables
@@ -77,33 +78,50 @@ def get_market_demand(idea: str):
 
 # API route to validate startup ideas
 @app.post("/validate")
-async def validate_idea(request: IdeaRequest):
+async def validate_idea(request: IdeaRequest, db: Session = Depends(get_db)):
     idea = request.idea
-
+    
     try:
         competitors = get_competitors(idea)
         market_demand = get_market_demand(idea)
+        # Check if user exists or create new user (for simplicity)
+        user = db.query(models.User).filter(models.User.email == "example@example.com").first()
+        if not user:
+            user = models.User(name="Fenil Vaghasiya", email="fenil@gmail.com")
+            db.add(user)
+            db.commit()
+            db.refresh(user)
 
-        # AI-generated insights
-        ai_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        # Store the idea in the database
+        new_idea = models.Idea(user_id=user.id, idea=idea)
+        db.add(new_idea)
+        db.commit()
+        db.refresh(new_idea)
+
+        # Call AI to validate the idea
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", 
             messages=[
                 {"role": "system", "content": "You are an expert startup idea validator."},
-                {"role": "user", "content": f"Analyze the market demand and competitor insights for {idea}. Provide key takeaways."}
+                {"role": "user", "content": f"Validate this startup idea: {idea}. Provide key takeaways."}
             ],
-            max_tokens=100
+            max_tokens=200
         )
-        
-        validation_result = ai_response["choices"][0]["message"]["content"]
-        # validation_result = "HEllo"
-      
-        return {
-            "marketDemand": market_demand,
-            "competitors": competitors,
-            "pricingStrategy": "Freemium",  
-            "growthPotential": "Moderate", 
-            "aiAnalysis": validation_result
-        }
+        validation_result = response["choices"][0]["message"]["content"]
 
+        # Store AI validation results
+        ai_result = models.AIValidationResult(
+        idea_id=new_idea.id,
+        market_demand=market_demand,  
+        competitors=competitors,      
+        pricing_strategy="Freemium",  
+        growth_potential="Moderate",  
+        ai_analysis=validation_result 
+)
+        db.add(ai_result)
+        db.commit()
+        db.refresh(ai_result)
+
+        return ai_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
