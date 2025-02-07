@@ -85,7 +85,7 @@ async def validate_idea(request: IdeaRequest, db: Session = Depends(get_db)):
         competitors = get_competitors(idea)
         market_demand = get_market_demand(idea)
         # Check if user exists or create new user (for simplicity)
-        user = db.query(models.User).filter(models.User.email == "example@example.com").first()
+        user = db.query(models.User).filter(models.User.email == "fenil@gmail.com").first()
         if not user:
             user = models.User(name="Fenil Vaghasiya", email="fenil@gmail.com")
             db.add(user)
@@ -114,7 +114,7 @@ async def validate_idea(request: IdeaRequest, db: Session = Depends(get_db)):
         idea_id=new_idea.id,
         market_demand=market_demand,  
         competitors=competitors,      
-        pricing_strategy="Freemium",  
+        pricing_strategy="Premium",  
         growth_potential="Moderate",  
         ai_analysis=validation_result 
 )
