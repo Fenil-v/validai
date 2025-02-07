@@ -3,14 +3,17 @@ import { useState } from "react";
 import axios from "axios";
 
 interface ValidationResponse {
-  marketDemand: string;
+  market_demand: string;
   competitors: string[];
-  pricingStrategy: string;
-  growthPotential: string;
-  aiAnalysis: string;
+  pricing_strategy: string;
+  growth_potential: string;
+  ai_analysis: string;
+}
+interface SubmitIdeaProps {
+  competitors: string; 
 }
 
-const SubmitIdea: React.FC = () => {
+const SubmitIdea: React.FC<SubmitIdeaProps> = () => {
   const [idea, setIdea] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<ValidationResponse | null>(null);
@@ -37,6 +40,7 @@ const SubmitIdea: React.FC = () => {
     }
   };
 
+  
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Submit Your Idea</h1>
@@ -65,27 +69,27 @@ const SubmitIdea: React.FC = () => {
               <tbody>
                 <tr className="border-b">
                   <td className="p-3 font-semibold">Market Demand:</td>
-                  <td className="p-3">{response.marketDemand}</td>
+                  <td className="p-3">{response.market_demand}</td>
                 </tr>
                 <tr className="border-b">
                   <td className="p-3 font-semibold">Competitors:</td>
                   <td className="p-3">
                     {response.competitors && response.competitors.length > 0
-                      ? response.competitors.join(", ")
+                      ? response?.competitors
                       : "None"}
                   </td>
                 </tr>
                 <tr className="border-b">
                   <td className="p-3 font-semibold">Pricing Strategy:</td>
-                  <td className="p-3">{response.pricingStrategy}</td>
+                  <td className="p-3">{response.pricing_strategy}</td>
                 </tr>
                 <tr className="border-b">
                   <td className="p-3 font-semibold">Growth Potential:</td>
-                  <td className="p-3">{response.growthPotential}</td>
+                  <td className="p-3">{response.growth_potential}</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-semibold">AI Analysis:</td>
-                  <td className="p-3">{response.aiAnalysis}</td>
+                  <td className="p-3">{response.ai_analysis}</td>
                 </tr>
               </tbody>
             </table>

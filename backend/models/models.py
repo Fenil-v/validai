@@ -36,10 +36,10 @@ class AIValidationResult(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     idea_id = Column(Integer, ForeignKey("ideas.id"), index=True)  # Foreign Key referencing Idea
-    market_demand = Column(String(50))
+    market_demand = Column(String(500))
     competitors = Column(Text)
-    pricing_strategy = Column(String(50))
-    growth_potential = Column(String(50))
+    pricing_strategy = Column(String(500))
+    growth_potential = Column(String(500))
     ai_analysis = Column(Text)
     validated_at = Column(TIMESTAMP, default=datetime.now)
 
