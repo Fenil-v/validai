@@ -9,11 +9,11 @@ interface ValidationResponse {
   growth_potential: string;
   ai_analysis: string;
 }
-interface SubmitIdeaProps {
-  competitors: string;
-}
+// interface SubmitIdeaProps {
+//   competitors: string;
+// }
 
-const SubmitIdea: React.FC<SubmitIdeaProps> = () => {
+const SubmitIdea: React.FC = () => {
   const [idea, setIdea] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<ValidationResponse | null>(null);
